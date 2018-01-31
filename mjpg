@@ -1,0 +1,11 @@
+
+
+/var/www/html/owncloud/data
+
+use mjpg
+cd /home/pi/mjpg-streamer/mjpg-streamer-experimental
+
+ sudo mjpg_streamer -i "./input_uvc.so -r 640x480 -f 10 -n" -o "./output_http.so -p 8080 -w ./www" -o "./output_file.so -d 10000 -f ./pics"
+ sudo /home/pi/mjpg-streamer/mjpg-streamer-experimental/mjpg_streamer -i "/home/pi/mjpg-streamer/mjpg-streamer-experimental/input_uvc.so -r 640x480 -f 10 -n" -o "/home/pi/mjpg-streamer/mjpg-streamer-experimental/output_http.so -p 8080 -w /home/pi/mjpg-streamer/mjpg-streamer-experimental/www" -o "/home/pi/mjpg-streamer/mjpg-streamer-experimental/output_file.so -d 10000 -f /home/pi/mjpg-streamer/mjpg-streamer-experimental/pics"
+
+ sudo /home/pi/mjpg-streamer/mjpg-streamer-experimental/mjpg_streamer -i "/home/pi/mjpg-streamer/mjpg-streamer-experimental/input_uvc.so -r 640x480 -f 10 -n" -o "/home/pi/mjpg-streamer/mjpg-streamer-experimental/output_http.so -p 8080 -w /home/pi/mjpg-streamer/mjpg-streamer-experimental/www" -o "/home/pi/mjpg-streamer/mjpg-streamer-experimental/output_file.so -d 10000 -f /var/www/html/owncloud/data"

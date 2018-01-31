@@ -1,0 +1,11 @@
+首先注意要设置好对应版本的镜像源。stretch
+开始安装LAMP吧，Linux已经有了，接下来
+安装Apache2
+	sudo apt-get install apache2 -y
+安装MySQL 
+	sudo apt-get install mysql-server -y
+	安装过程中会提示设置MySQL的Root账户的密码，注意根据提示设置，并牢记。
+安装phpMyAdmin 
+	sudo apt-get install phpmyadmin -y
+http://www.sohu.com/a/196216809_610498
+http://blog.csdn.net/Meow323/article/details/52409142

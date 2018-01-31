@@ -1,0 +1,84 @@
+ Ubuntu16.04 通过网线直连树莓派 
+预备条件
+
+	pc ubuntu 16.04
+	树莓派3B
+	一根网线
+
+步骤
+	点亮树莓派并通过网线连接到PC
+	在Ubuntu右上角的网络里点击Edit Connections，在Ethernet下的连接及为有线连接点击该项的Edit 
+	修改设置，在IPV4设置中设置Method为共享其他计算机，保存设置 
+	点击右上角网络图标，选择Connection Information查看本机的IP，若未获取请在网络设置中关闭重启用以太网网络 
+	在ubuntu安装nmap搜索该网段存在的设备
+	sudo apt-get install nmap
+	nmap 10.42.0/24
+	得到树莓派ip后可通过ssh或vpc与其交互，可设置一个该网段ip，下次连接不需再次搜索网段
+
+找到pi的ip 
+	ssh链接,登陆树莓派
+	ssh pi@10.42.0.52
+	输入yes
+	输入密码raspberry
+
+安装vncserver
+	sudo apt-get tightvncserver
+
+开启vnc服务 
+	vncserver :1 -geometry 1366x768
+
+设置开机启动	
+	sudo nano /etc/init.d/tightvncserver
+
+内容如下：（putty窗口中按右键=粘贴)
+
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          tightvncserver
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop tightvncserver
+### END INIT INFO
+ 
+# More details see:
+# http://www.penguintutor.com/linux/tightvnc
+ 
+### Customize this entry
+# Set the USER variable to the name of the user to start tightvncserver under
+export USER='pi'
+### End customization required
+ 
+eval cd ~$USER
+ 
+case "$1" in
+  start)
+    # 启动命令行。此处自定义分辨率、控制台号码或其它参数。
+    su $USER -c '/usr/bin/tightvncserver -depth 16 -geometry 800x600 :1'
+    echo "Starting TightVNC server for $USER "
+    ;;
+  stop)
+    # 终止命令行。此处控制台号码与启动一致。
+    su $USER -c '/usr/bin/tightvncserver -kill :1'
+    echo "Tightvncserver stopped"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/tightvncserver {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
+
+然后给tightvncserver文件加执行权限，并更新开机启动列表。
+	sudo chmod 755 /etc/init.d/tightvncserver
+	sudo update-rc.d tightvncserver defaults
+
+
+
+参考网址
+http://blog.csdn.net/a610786189/article/details/78701860    //通过网线直连树莓派
+	
+http://blog.csdn.net/scylhy/article/details/50853830
+
+

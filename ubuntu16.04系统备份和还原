@@ -1,0 +1,41 @@
+1.先安装依赖包
+
+GitHub作者的教程有些麻烦，网上有对应的源地址
+
+添加源地址
+
+sudo add-apt-repository ppa:sergiomejia666/respin
+sudo add-apt-repository ppa:sergiomejia666/xresprobe
+
+sudo apt update                             //需要执行，不然无法搜索到安装信息
+
+
+sudo apt install xresprobe
+sudo apt install respin
+
+sudo apt install isolinux
+2.安装后命令使用说明:
+
+
+   sudo respin backup   直接备份系统生成在iso文件 /home/respin/respin/ 目录下
+
+
+   sudo respin backup custom.iso 自定义ISO名称
+
+
+   sudo respin clean    清除做好的ISO文件配置
+
+
+   sudo respin dist    制作可分发的系统，只包含系统不包含/home下的资料文件
+
+
+   sudo respin dist cdfs  制作可分发的系统，只包含系统不包含/home下的资料文件
+
+
+   sudo respin dist iso custom.iso  制作可分发的系统，可以自定义ISO名称，但需要保证已经执行了sudo respin dist cdfs
+
+3.ISO使用
+可以直接用ultraiso 制作安装启动盘使用
+
+参考网址：
+http://blog.csdn.net/milo123456/article/details/71084254?utm_source=itdadao&utm_medium=referral

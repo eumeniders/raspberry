@@ -1,0 +1,160 @@
+=================================Linux命令行对SD卡进行分区及格式化================================
+查看挂载点
+	sudo fdisk -l
+对硬盘分区
+	sudo fdisk /dev/sdc(sdc是需要分区的硬盘的挂载点)
+	在Command (m for help)提示符后面输入m显示一个帮助菜单。
+	在Command (m for help)提示符后面输入d，执行 delete partition 指令给硬盘删除分区。（默认删除1分区）
+	在Command (m for help)提示符后面输入n，执行 add a new partition 指令给硬盘增加一个新分区。
+	在Command (m for help)提示符后面输入w，保存分区表。
+格式化硬盘
+	sudo mkfs.vfat -F 32 /dev/sdc1即可将u盘格式化为fat32格式。
+
+	假如你要把指定磁盘格式化为NTFS格式那么你需要sudo apt-get install ntfsprogs来安装ntfs读写工具
+	然后执行sudo mkfs.ntfs /dev/sdc1，此过程会很慢。
+	
+	sudo mkfs.ext4 /dev/sda1 # 格式化为ext4分区
+	sudo mkfs.ext3 /dev/sda1 # 格式化为ext3分区
+	sudo mkfs.ext2 /dev/sda1 #格式化为ext2分区
+参考网址
+http://www.linuxidc.com/Linux/2013-05/85115.htm //分区教程
+https://jingyan.baidu.com/article/335530dae5113e19cb41c30e.html  //分区教程
+http://mtoou.info/ubuntu-geshihua-upan/    //格式化教程
+
+=================================Linux命令行烧录树莓派镜像至SD卡================================
+
+
+首先下载镜像压缩包
+	https://www.raspberrypi.org/downloads/raspbian/
+
+解压缩镜像
+	unzip  2013-09-25-wheezy-raspbian.zip
+
+查找SD卡
+	运行df -h命令查看当前哪些设备已经挂载。插入SD卡后，再次运行 df -h，找出两次运行区别。
+	我们插入的SD卡设备名称就是/dev/sdc
+	×××××注意下面我们要在“设备”中写入镜像，而不是只向某个分区写入。×××××××
+	为了防止在写入镜像的时候有其他读取或写入，我们需要卸载设备。两个分区都要卸载。
+	sudo umount /dev/sdc1
+	sudo umount /dev/sdc2	
+
+使用dd命令写入镜像至SD卡
+	bs代表一次写入多大的块，是blocksize的缩写，4M一般都没问题，如果不行，试试改成1M。
+	if参数为下载的镜像的路径（应该是input file缩写）
+	of后参数为设备地址（应该是output file的缩写，linux上一切都是文件）千万不要写错这里的参数，否则你可能丢失
+        硬盘所有数据。
+	因为dd命令没有进度显示，所以看上去可能感觉假死了，此时只要等待几分钟即可，泡壶茶，刷个微博吧。
+	sudo dd bs=4M if=2013-09-25-wheezy-raspbian.img（更改为自己的版本） of=/dev/sdc
+	查找if当前路经的方法，打开文件所在文件夹，右键点击空白处，在此处打开终端，输入pwd，即可得到if
+	由于树莓派默认不开启ssh服务，所以需要在sd卡根目录新建一个文件命名为ssh。（注意没有后缀）
+
+移除SD卡，插入树莓派
+
+参考网址
+http://shumeipai.nxez.com/2013/12/08/linux-command-line-burn-raspberry-pi-mirror-to-sd-card.html
+
+=================================树莓派+一根网线直连笔记本电脑================================
+操作步骤。
+1、连线。
+	树莓派接好供电线；
+	将网线一端接到树莓派，另一端接到笔记本。
+
+2、共享互联网。
+	如果现在笔记本已经通过WIFI连接到互联网，可以将无线网卡的互联网资源共享给本地连接。
+	以win10系统为例，右键点击wifi图标——更改适配器设置，找到无线网络连接右键“属性”
+	在共享选项卡上选中“允许其他网络用户通过此计算机的Internet连接来连接（N）”选项，点确定。
+
+3、查找树莓派的IP地址。
+	运行DOS窗口，输入arp -a，在接口192.168.137.1下的为动态类型的IP地址就是树莓派的地址
+为什么是接口192.168.137.1的呢？因为上部共享互联网的时候已把“本地连接”的IP地址自动设置成静态IP192.168.137.1了，当然这个IP地址也可以自己设置成其他自己常用的静态IP地址。因为此时树莓派的IP地址是动态的，只能用此方法查找。也可以通过修改SD卡中的cmdline.txt文件（在里面加入语句ip=***.***.***.***），将树莓派设置成静态IP地址，但此时只有将电脑的“本地连接”的静态IP地址设置成与树莓派静态IP地址同一号段才能成功连接。
+
+4、利用PuTTY软件连接树莓派。
+	输入树莓派地址，点击连接 用户名pi，密码默认raspberry
+5、图形化界面连接。（在putty中执行如下命令：）
+（1）更改软件源
+	首先更改树莓派3的软件源，否则可能会产生upgrade时候卡死，无法再次连接树莓派，导致只能重刷系统
+	树莓派官方有提供一个镜像列表：http://www.raspbian.org/RaspbianMirrors 
+	编辑 /etc/apt/sources.list 文件，这里推荐就用系统自带的 nano 命令编辑，命令如下：
+	sudo nano /etc/apt/sources.list
+	进入编辑界面，删除原有的内容，粘贴镜像主页提供的内容，结果如下：
+	
+	
+	例如使用大连东软信息学院软件源镜像，修改之后的内容如下：
+    	deb http://mirrors.neusoft.edu.cn/raspbian/raspbian wheezy main contrib non-free rpi
+	
+	清华大学源
+	deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib
+	deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main non-free contrib	
+
+	或者使用阿里云的源
+	deb http://mirrors.aliyun.com/raspbian/raspbian/ wheezy main non-free contrib rpi
+	#deb-src http://mirrors.aliyun.com/raspbian/raspbian/ jessie main non-free contrib rpi
+	
+	然后Ctrl+O 保存，然后 回车 确认文件名称，再Ctrl+X 退出 nano。
+	sudo apt-get update
+	sudo apt-get upgrade
+	
+（2）安装vnc服务
+	sudo apt-get install tightvncserver
+	安装好之后请一定先使用此命令设置一个VNC密码：
+	vncpasswd
+	先输入操作密码两次，然后会询问是否设置一个查看(view-only)密码，选择n	
+
+（3）开机自动启动
+	设置开机启动，需要在/etc/init.d/中创建一个文件。例如tightvncserver：
+	sudo nano /etc/init.d/tightvncserver
+	（putty窗口中按右键=粘贴）内容如下：（复制两个#行之间的代码，#行不用复制粘贴）
+##################################################################################################
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          tightvncserver
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop tightvncserver
+### END INIT INFO
+ 
+# More details see:
+# http://www.penguintutor.com/linux/tightvnc
+ 
+### Customize this entry
+# Set the USER variable to the name of the user to start tightvncserver under
+export USER='pi'
+### End customization required
+ 
+eval cd ~$USER
+ 
+case "$1" in
+  start)
+    # 启动命令行。此处自定义分辨率、控制台号码或其它参数。（注意中间是英文字母x不是shift+8）
+    su $USER -c '/usr/bin/tightvncserver -depth 16 -geometry 1366x768 :1'
+    echo "Starting TightVNC server for $USER "
+    ;;
+  stop)
+    # 终止命令行。此处控制台号码与启动一致。
+    su $USER -c '/usr/bin/tightvncserver -kill :1'
+    echo "Tightvncserver stopped"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/tightvncserver {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
+##################################################################################################
+
+	按Ctrl+X，回答Y（存盘）退出nano编辑器。
+	然后给tightvncserver文件加执行权限，并更新开机启动列表。
+	sudo chmod 755 /etc/init.d/tightvncserver
+	sudo update-rc.d tightvncserver defaults
+	然后重启树莓派
+	sudo shutdown -r now
+
+（4）电脑登录VNC
+	登录地址输入“IP地址:控制台号码”（控制台号码默认是1）
+
+参考网址：
+http://shumeipai.nxez.com/2013/10/15/raspberry-pi-and-a-network-cable-directly-connected-laptop.html  
+//树莓派+一根网线直连笔记本电脑
+http://shumeipai.nxez.com/2013/09/04/login-rpi-with-vnc.html //VNC远程登录树莓派的图形界面

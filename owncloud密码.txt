@@ -1,0 +1,23 @@
+管理员账号 root 密码 jingjiu
+用户账号 eumeniders 密码 jingjiu
+数据库名 owncloud
+
+参考网址：
+http://www.sohu.com/a/196216809_610498
+
+隧道名称tunnel
+前置域名cj9
+本地端口127.0.0.1：80
+http验证用户名：root
+http验证密码：admin
+ sudo nano /var/www/html/owncloud/config/config.php
+
+启动映射服务
+    Linux或者Mac系统下启动，需要进入到客户端的目录执行以下命令，通过隧道管理找到隧道id，然后执行
+	./sunny clientid 隧道id（ecf1fac47e0dcb49）
+owncloud端口
+/usr/share/linux_arm/sunny clientid ecf1fac47e0dcb49
+    
+
+8080端口：36c5556968a09075
+服务器地址： cj9.free.ngrok.cc/owncloud
